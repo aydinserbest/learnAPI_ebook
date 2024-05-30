@@ -8,32 +8,36 @@ import java.io.File;
 import static io.restassured.RestAssured.given;
 
 public class ContactManagementTest {
-    private final String app ="http://localhost:8080/app";
+    private final String app ="http://localhost:8080/app"; // Base URL
 
-    private String getJWTToken (){
-        String admin = "src/test/resources/admin.json";
-        String url = app + "/auth/authenticate";
+    private String getJWTToken (){ // Method to get JWT token
+        String admin = "src/test/resources/admin.json"; // Admin credentials file
+        String url = app + "/auth/authenticate"; // Authentication endpoint
         return
                 given().
-                        body(new File(admin)).
-                        contentType("application/json").
+                        body(new File(admin)). // Set request body
+                        contentType("application/json").  // Set content type
                         when().
-                        post(url).getHeader("Authorization");
+                        post(url). // Make POST request
+                        getHeader("Authorization"); // Extract token from header
+        /*
+        then().extract().header("Authorization");
+         */
     }
     @Test
     @DisplayName("Create Contact")
     public void createContact() {
-        String addContact = "src/test/resources/contact.json";
+        String addContact = "src/test/resources/contact.json"; // Contact data file
         String url = app + "/api/v1/contacts";
-        System.out.println(getJWTToken());
+        String token = getJWTToken();
         given().
-                body(new File(addContact)).
-                header("Authorization", "Bearer " + getJWTToken()).
-                contentType("application/json").
+                body(new File(addContact)). // Set request body
+                header("Authorization", "Bearer " + token). // Set authorization header with space
+                contentType("application/json"). // Set content type
                 when().
-                post(url).
+                post(url). // Make POST request
                 then().
-                statusCode(201);
+                statusCode(201); // Check response status
 
     }
 }
