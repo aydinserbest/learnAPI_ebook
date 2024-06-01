@@ -1,43 +1,31 @@
 package contacts;
 
+import org.example.api.request.RequestProcessor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ContactManagementTest {
-    private final String app ="http://localhost:8080/app"; // Base URL
+public class ContactManagementTest extends BaseTest {
+    private RequestProcessor requestProcessor;
 
-    private String getJWTToken (){ // Method to get JWT token
-        String admin = "src/test/resources/token.json"; // Admin credentials file
-        String url = app + "/auth/authenticate"; // Authentication endpoint
-        return
-                given().
-                        body(new File(admin)). // Set request body
-                        contentType("application/json").  // Set content type
-                        when().
-                        post(url). // Make POST request
-                        getHeader("Authorization"); // Extract token from header
-        /*
-        then().extract().header("Authorization");
-         */
+    @BeforeEach
+    public void setup() {
+        super.setup();
+        requestProcessor = new RequestProcessor();
+        requestProcessor.setJwtToken(getJwtToken());
     }
+
     @Test
     @DisplayName("Create Contact")
     public void createContact() {
         String addContact = "src/test/resources/contact.json"; // Contact data file
-        String url = app + "/api/v1/contacts"; // Contacts API endpoint
-        String token = getJWTToken();
-        given().
-                body(new File(addContact)). // Set request body
-                header("Authorization", "Bearer " + token). // Set authorization header with space
-                contentType("application/json"). // Set content type
-                when().
-                post(url). // Make POST request
-                then().
-                statusCode(201); // Check response status
+        String url = getConfigLoader().getProperty("url") + getConfigLoader().getEndpoint("contact.add"); // Full URL
 
+        requestProcessor.sendPostRequest(url, new File(addContact));
+        assertEquals(201, requestProcessor.getResponse().getStatusCode());
     }
 }
