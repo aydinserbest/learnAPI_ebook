@@ -11,7 +11,7 @@ public class ContactManagementTest {
     private final String app ="http://localhost:8080/app"; // Base URL
 
     private String getJWTToken (){ // Method to get JWT token
-        String admin = "src/test/resources/admin.json"; // Admin credentials file
+        String admin = "src/test/resources/token.json"; // Admin credentials file
         String url = app + "/auth/authenticate"; // Authentication endpoint
         return
                 given().
@@ -28,7 +28,7 @@ public class ContactManagementTest {
     @DisplayName("Create Contact")
     public void createContact() {
         String addContact = "src/test/resources/contact.json"; // Contact data file
-        String url = app + "/api/v1/contacts";
+        String url = app + "/api/v1/contacts"; // Contacts API endpoint
         String token = getJWTToken();
         given().
                 body(new File(addContact)). // Set request body
