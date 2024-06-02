@@ -1,6 +1,7 @@
 package org.example.api.request;
 
 import io.restassured.response.Response;
+import org.example.exceptions.InvalidRequestException;
 
 import java.io.File;
 import java.util.Map;
@@ -17,21 +18,44 @@ public abstract class HttpRequest {
 
     private String url;
     private String token;
-    private Map<String, Object> queryParams;
+    private Map<String, ? extends Object> query;
     private File payload;
 
-    // Getters ve Setters
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public abstract Response request() throws InvalidRequestException;
 
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
+    public HttpRequest setUrl(String url) {
+        this.url = url;
+        return this;
+    }
 
-    public Map<String, Object> getQueryParams() { return queryParams; }
-    public void setQueryParams(Map<String, Object> queryParams) { this.queryParams = queryParams; }
-    public File getPayload() { return payload; }
-    public void setPayload(File payload) { this.payload = payload; }
+    public HttpRequest setToken(String token) {
+        this.token = token;
+        return this;
+    }
 
-    // Soyut metod
-    public abstract Response sendRequest();
+    public HttpRequest setQuery(Map<String, ? extends Object> query) {
+        this.query = query;
+        return this;
+    }
+
+    public HttpRequest setPayload(File payload) {
+        this.payload = payload;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public Map<String, ? extends Object> getQuery() {
+        return query;
+    }
+
+    public File getPayload() {
+        return payload;
+    }
 }

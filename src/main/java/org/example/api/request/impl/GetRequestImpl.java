@@ -1,31 +1,32 @@
 package org.example.api.request.impl;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.api.request.HttpRequest;
+import org.example.exceptions.InvalidRequestException;
+import org.json.JSONException;
+
+import static io.restassured.RestAssured.given;
 
 public class GetRequestImpl extends HttpRequest {
+    final Logger log = LogManager.getLogger(this.getClass());
+
     @Override
-    public Response sendRequest() {
-        // Check if queryParams is not null and use it
-        if (getQueryParams() != null) {
-            return RestAssured.given()
-                    .header("Authorization", "Bearer " + getToken())
-                    .queryParams(getQueryParams())
-                    .when()
-                    .get(getUrl())
-                    .then()
-                    .extract()
-                    .response();
-        } else {
-            return RestAssured.given()
-                    .header("Authorization", "Bearer " + getToken())
-                    .when()
-                    .get(getUrl())
-                    .then()
-                    .extract()
-                    .response();
+    public Response request() {
+        Response response;
+        try {
+            response =
+                    given()
+                            .header("Authorization", "Bearer " + getToken())
+                            .contentType("application/json")
+                            .when()
+                            .get(getUrl());
+        } catch (JSONException | IllegalArgumentException e) {
+            log.error("error occurred while requesting " + getUrl());
+            throw new InvalidRequestException("there is some problem with the request.", e);
         }
+        return response;
     }
 }
 /*

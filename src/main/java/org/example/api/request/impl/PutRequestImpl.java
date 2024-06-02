@@ -9,7 +9,9 @@ import org.json.JSONException;
 
 import static io.restassured.RestAssured.given;
 
-public class PostRequestImpl extends HttpRequest {
+
+
+public class PutRequestImpl extends HttpRequest {
     final Logger log = LogManager.getLogger(this.getClass());
 
     @Override
@@ -22,7 +24,7 @@ public class PostRequestImpl extends HttpRequest {
                             .header("Authorization", "Bearer " + getToken())
                             .contentType("application/json")
                             .when()
-                            .post(getUrl());
+                            .put(getUrl(), getQuery());
         } catch (JSONException | IllegalArgumentException e) {
             log.error("error occurred while requesting " + getUrl());
             throw new InvalidRequestException("there is some problem with the request.", e);
